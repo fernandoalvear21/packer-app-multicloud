@@ -1,0 +1,14 @@
+# Archivos de Packer
+packer_cache/
+*.box
+
+# Dependencias de Node.js
+node_modules/
+package-lock.json
+
+# Archivos del sistema
+.DS_Store
+.env
+
+# Logs
+*.log
