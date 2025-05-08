@@ -4,6 +4,10 @@ packer {
       version = ">= 1.0.0"
       source  = "github.com/hashicorp/amazon"
     }
+    azure = {
+      version = ">= 1.0.0"
+      source  = "github.com/hashicorp/azure"
+    }
   }
 }
 
@@ -39,10 +43,38 @@ source "amazon-ebs" "ubuntu" {
   }
 }
 
+# Definición de la fuente Azure
+source "azure-arm" "ubuntu" {
+  use_azure_cli_auth = true
+  
+  managed_image_name = "nodejs-nginx-${local.timestamp}"
+  managed_image_resource_group_name = "rg-packer-image"
+
+  os_type = "Linux"
+  ssh_username = "azureuser"
+  
+  image_publisher = "Canonical"
+  image_offer = "0001-com-ubuntu-server-focal"
+  image_sku = "20_04-lts"
+  image_version = "latest"
+
+  location = "eastus"
+  vm_size = "Standard_B1s"
+
+  azure_tags = {
+    Name        = "nodejs-nginx"
+    Environment = "production"
+    Builder     = "packer"
+  }
+}
+
 # Definición del build
 build {
   name = "nodejs-nginx"
-  sources = ["source.amazon-ebs.ubuntu"]
+  sources = [
+    "source.amazon-ebs.ubuntu",
+    "source.azure-arm.ubuntu"
+  ]
 
   # Ejecutar scripts de instalación
   provisioner "shell" {

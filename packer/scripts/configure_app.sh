@@ -21,7 +21,7 @@ app.get('/', (req, res) => {
   res.send('¡Aplicación Node.js funcionando correctamente!');
 });
 
-app.listen(port, () => {
+app.listen(port, '0.0.0.0', () => {
   console.log(\`Aplicación ejecutándose en puerto \${port}\`);
 });
 EOF
@@ -30,4 +30,5 @@ EOF
 echo "Configurando PM2..."
 pm2 start app.js
 pm2 save
-pm2 startup
+env PATH=$PATH:/usr/bin pm2 startup systemd -u ubuntu --hp /home/ubuntu
+sudo systemctl enable pm2-ubuntu

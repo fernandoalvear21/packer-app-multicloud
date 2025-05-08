@@ -21,4 +21,6 @@ sudo npm install -g pm2
 
 # Crear directorio de la aplicación
 sudo mkdir -p /var/www/nodejs
+
+# Asignar permisos directamente al usuario ubuntu
 sudo chown -R ubuntu:ubuntu /var/www/nodejs
