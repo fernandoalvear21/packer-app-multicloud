@@ -10,6 +10,8 @@ packer {
 # Variables locales
 locals {
   timestamp = regex_replace(timestamp(), "[- TZ:]", "")
+  scripts_path = "${path.root}/scripts"
+  files_path = "${path.root}/files"
 }
 
 # Definición de la fuente Amazon EBS
@@ -41,4 +43,27 @@ source "amazon-ebs" "ubuntu" {
 build {
   name = "nodejs-nginx"
   sources = ["source.amazon-ebs.ubuntu"]
+
+  # Ejecutar scripts de instalación
+  provisioner "shell" {
+    scripts = [
+      "${local.scripts_path}/install_nodejs.sh",
+      "${local.scripts_path}/install_nginx.sh",
+      "${local.scripts_path}/configure_app.sh"
+    ]
+    execute_command = "chmod +x {{ .Path }}; sudo sh -c '{{ .Vars }} {{ .Path }}'"
+  }
+
+  # Copiar y configurar Nginx
+  provisioner "file" {
+    source = "${local.files_path}/nginx.conf"
+    destination = "/tmp/nginx.conf"
+  }
+
+  provisioner "shell" {
+    inline = [
+      "sudo mv /tmp/nginx.conf /etc/nginx/sites-available/default",
+      "sudo systemctl restart nginx"
+    ]
+  }
 }
